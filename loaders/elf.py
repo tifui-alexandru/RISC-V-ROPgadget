@@ -121,11 +121,12 @@ class ELF():
         self.__parse_program_header()
         self.__parse_section_header()
 
-    def __parse_file_header():
+    def __parse_file_header(self):
         e_ident = slef.__binary[:ELF_flags.EI_SIZE]
 
         ei_head = e_ident[ELF_flags.EI_MAG0 : ELF_flags.EI_MAG1]
         ei_class = e_ident[ELF_flags.EI_CLASS]
+        ei_data = e_ident[ELF_flags.EI_DATA]
 
         if ei_head != bytearray(b"\x7fELF"):
             print("[Error] only ELF format is supported")
@@ -133,6 +134,10 @@ class ELF():
 
         if ei_class != ELF_flags.ELFCLASS32 and ei_class != ELF_flags.ELFCLASS64:
             print("[Error] architecture size corrupted")
+            return None
+
+        if ei_data != ELF_flags.ELFDATA2LSB or ei_data != ELF_flags.ELFDATA2MSB:
+            print("[Error] bad endianness")
             return None
 
         if ei_class == ELF_flags.ELFCLASS32:
@@ -144,7 +149,7 @@ class ELF():
             print("[Error] only RISC-V architecture supported")
             return None
 
-    def __parse_program_header():
+    def __parse_program_header(self):
         pdhr_num = self.__ehdr.e_phnum
         base = self.__binary[self.__ehdr.e_phoff:]
 
@@ -159,7 +164,7 @@ class ELF():
             self.__phdr_l.append(phdr)
             base = base[self.__ehdr.e_phentsize:]
 
-    def __parse_section_header():
+    def __parse_section_header(self):
         shdr_num = self.__ehdr.e_shnum
         base = self.__binary[self.__ehdr.e_shoff:]
 
@@ -178,3 +183,9 @@ class ELF():
             string_table = bytes(self.__binary[(self.__shdr_l[self.__ehdr.e_shstrndx].sh_offset):])
             for i in range(shdr_num):
                 self.__shdr_l[i].str_name = string_table[self.__shdr_l[i].sh_name:].split(b'\x00')[0].decode('utf8')
+
+    def get_endianness(self):
+        if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
+            return "little"
+        else 
+            return "big"
