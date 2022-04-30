@@ -1,7 +1,7 @@
 from ctypes import *
 from capstone import *
 
-class ELF_flags(object):
+class ELF_flags():
     EI_SIZE     = 0x10
     EI_MAG0     = 0x00
     EI_MAG1     = 0x03
@@ -189,3 +189,9 @@ class ELF():
             return "little"
         else 
             return "big"
+
+    def get_exec_sections(self):
+        PR_X = 0x1
+
+        return [bytes(self.__binary[segment.p_offset : segment.p_offset + segment.p_memsz])
+                for segment in self.__phdr_l if segment.p_flags & PR_X]
