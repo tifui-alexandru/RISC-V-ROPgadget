@@ -122,7 +122,7 @@ class ELF():
         self.__parse_section_header()
 
     def __parse_file_header(self):
-        e_ident = slef.__binary[:ELF_flags.EI_SIZE]
+        e_ident = self.__binary[:ELF_flags.EI_SIZE]
 
         ei_head = e_ident[ELF_flags.EI_MAG0 : ELF_flags.EI_MAG1]
         ei_class = e_ident[ELF_flags.EI_CLASS]
@@ -156,7 +156,7 @@ class ELF():
         self.__phdr_l = []
 
         for i in range(pdhr_num):
-            if self.__ehdr.e_ident[ELFFlags.EI_CLASS] == ELF_flags.ELFCLASS32:
+            if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
                 phdr = Elf32_Phdr.from_buffer_copy(base)
             else:
                 phdr = Elf64_Phdr.from_buffer_copy(base)
@@ -171,7 +171,7 @@ class ELF():
         self.__shdr_l = []
 
         for i in range(shdr_num):
-            if self.__ehdr.e_ident[ELFFlags.EI_CLASS] == ELF_flags.ELFCLASS32:
+            if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
                 shdr = Elf32_Shdr.from_buffer_copy(base)
             else:
                 shdr = Elf64_Shdr.from_buffer_copy(base)
@@ -187,7 +187,7 @@ class ELF():
     def get_endianness(self):
         if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
             return "little"
-        else 
+        else:
             return "big"
 
     def get_exec_sections(self):

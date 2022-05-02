@@ -13,18 +13,18 @@ class ROP():
         pass # to do
 
     def __scan_binary(self):
-        if __binary.get_endianness() == "little":
+        if self.__binary.get_endianness() == "little":
             gadget_links = [] # to be derermined
         else:
             gadget_links = [] # to be determined
 
-        exec_sections = __binary.get_exec_sections()
+        exec_sections = self.__binary.get_exec_sections()
 
         for section in exec_sections:
             current_chain = []
 
-            for instruction_end in range(len(section), 0, -INSTRUCTION_LEN):
-                instruction = section[instruction_end - INSTRUCTION_LEN : instruction_end]
+            for instruction_end in range(len(section), 0, -RISCV_CONSTANTS.INSTRUCTION_LEN):
+                instruction = section[instruction_end - RISCV_CONSTANTS.INSTRUCTION_LEN : instruction_end]
 
                 if self.__is_gadget_link(instruction, gadget_links):
                     current_chain = []
