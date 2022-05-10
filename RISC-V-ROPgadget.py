@@ -1,0 +1,3 @@
+import riscvropgadget
+
+riscvropgadget.main()

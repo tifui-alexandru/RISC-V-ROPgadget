@@ -1,15 +1,19 @@
 import argparse 
-from loaders.elf import *
-from rop.rop import *
 
-if __name__ == "__main__":
+import riscvropgadget.loaders
+import riscvropgadget.structures
+
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(dest="binary", help="path to binary")
 
     args = parser.parse_args()
 
-    binary = ELF(args["binary"])
+    from riscvropgadget.loaders.elf import ELF
+    from riscvropgadget.rop import ROP
+
+    binary = ELF(args.binary)
     rop = ROP(binary)
 
     rop.list_gadgets()

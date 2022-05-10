@@ -1,7 +1,8 @@
 import re
-from trie import *
 from ctypes import *
 from capstone import *
+
+from riscvropgadget.structures.trie import Trie
 
 class RISCV_CONSTANTS():
     INSTRUCTION_LEN = 4
