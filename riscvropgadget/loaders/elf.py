@@ -4,7 +4,7 @@ from capstone import *
 class ELF_flags():
     EI_SIZE     = 0x10
     EI_MAG0     = 0x00
-    EI_MAG1     = 0x03
+    EI_MAG1     = 0x04
     ELFCLASS32  = 0x01
     ELFCLASS64  = 0x02
     EI_CLASS    = 0x04
@@ -17,7 +17,7 @@ class ELF_flags():
 
 # Parsers for little endian
 
-class Elf32_Ehdr(LittleEndianStructure):
+class Elf32_Ehdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -36,7 +36,7 @@ class Elf32_Ehdr(LittleEndianStructure):
                 ]
 
 
-class Elf64_Ehdr(LittleEndianStructure):
+class Elf64_Ehdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -55,7 +55,7 @@ class Elf64_Ehdr(LittleEndianStructure):
                 ]
 
 
-class Elf32_Phdr(LittleEndianStructure):
+class Elf32_Phdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_offset",        c_uint),
@@ -68,7 +68,7 @@ class Elf32_Phdr(LittleEndianStructure):
                 ]
 
 
-class Elf64_Phdr(LittleEndianStructure):
+class Elf64_Phdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_flags",         c_uint),
@@ -81,7 +81,7 @@ class Elf64_Phdr(LittleEndianStructure):
                 ]
 
 
-class Elf32_Shdr(LittleEndianStructure):
+class Elf32_Shdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -96,7 +96,7 @@ class Elf32_Shdr(LittleEndianStructure):
                 ]
 
 
-class Elf64_Shdr(LittleEndianStructure):
+class Elf64_Shdr_LSB(LittleEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -112,7 +112,7 @@ class Elf64_Shdr(LittleEndianStructure):
 
 # Parsers for big endian
 
-class Elf32_Ehdr(BigEndianStructure):
+class Elf32_Ehdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -131,7 +131,7 @@ class Elf32_Ehdr(BigEndianStructure):
                 ]
 
 
-class Elf64_Ehdr(BigEndianStructure):
+class Elf64_Ehdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -150,7 +150,7 @@ class Elf64_Ehdr(BigEndianStructure):
                 ]
 
 
-class Elf32_Phdr(BigEndianStructure):
+class Elf32_Phdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_offset",        c_uint),
@@ -163,7 +163,7 @@ class Elf32_Phdr(BigEndianStructure):
                 ]
 
 
-class Elf64_Phdr(BigEndianStructure):
+class Elf64_Phdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_flags",         c_uint),
@@ -176,7 +176,7 @@ class Elf64_Phdr(BigEndianStructure):
                 ]
 
 
-class Elf32_Shdr(BigEndianStructure):
+class Elf32_Shdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -191,7 +191,7 @@ class Elf32_Shdr(BigEndianStructure):
                 ]
 
 
-class Elf64_Shdr(BigEndianStructure):
+class Elf64_Shdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -233,14 +233,20 @@ class ELF():
             print("[Error] architecture size corrupted")
             return None
 
-        if ei_data != ELF_flags.ELFDATA2LSB or ei_data != ELF_flags.ELFDATA2MSB:
+        if ei_data != ELF_flags.ELFDATA2LSB and ei_data != ELF_flags.ELFDATA2MSB:
             print("[Error] bad endianness")
             return None
 
         if ei_class == ELF_flags.ELFCLASS32:
-            self.__ehdr = Elf32_Ehdr.from_buffer_copy(self.__binary)
+            if ei_data == ELF_flags.ELFDATA2LSB:
+                self.__ehdr = Elf32_Ehdr_LSB.from_buffer_copy(self.__binary)
+            else:
+                self.__ehdr = Elf32_Ehdr_MSB.from_buffer_copy(self.__binary)
         else:
-            self.__ehdr = Elf64_Ehdr.from_buffer_copy(self.__binary)
+            if ei_data == ELF_flags.ELFDATA2LSB:
+                self.__ehdr = Elf64_Ehdr_LSB.from_buffer_copy(self.__binary)
+            else:
+                self.__ehdr = Elf64_Ehdr_MSB.from_buffer_copy(self.__binary)
 
         if self.__ehdr.e_machine != ELF_flags.EM_RISCV:
             print("[Error] only RISC-V architecture supported")
@@ -254,9 +260,16 @@ class ELF():
 
         for i in range(pdhr_num):
             if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
-                phdr = Elf32_Phdr.from_buffer_copy(base)
+                if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
+                    phdr = Elf32_Phdr_LSB.from_buffer_copy(base)
+                else:
+                    phdr = Elf32_Phdr_MSB.from_buffer_copy(base)
             else:
-                phdr = Elf64_Phdr.from_buffer_copy(base)
+                if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
+                    phdr = Elf64_Phdr_LSB.from_buffer_copy(base)
+                else:
+                    phdr = Elf64_Phdr_MSB.from_buffer_copy(base)
+
 
             self.__phdr_l.append(phdr)
             base = base[self.__ehdr.e_phentsize:]
@@ -269,9 +282,15 @@ class ELF():
 
         for i in range(shdr_num):
             if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
-                shdr = Elf32_Shdr.from_buffer_copy(base)
+                if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
+                    shdr = Elf32_Shdr_LSB.from_buffer_copy(base)
+                else:
+                    shdr = Elf32_Shdr_LSB.from_buffer_copy(base)
             else:
-                shdr = Elf64_Shdr.from_buffer_copy(base)
+                if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
+                    shdr = Elf64_Shdr_LSB.from_buffer_copy(base)
+                else:
+                    shdr = Elf64_Shdr_LSB.from_buffer_copy(base)
 
             self.__shdr_l.append(shdr)
             base = base[self.__ehdr.e_shentsize:]

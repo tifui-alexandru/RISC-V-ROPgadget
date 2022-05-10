@@ -15,5 +15,4 @@ def main():
 
     binary = ELF(args.binary)
     rop = ROP(binary)
-
     rop.list_gadgets()

@@ -23,9 +23,9 @@ class ROP():
         
     def __get_JOP_gadgets(self):
         arch_mode = self.__binary.get_arch_mode()
-        endianness = self.__binary.get_get_endianness()
+        endianness = self.__binary.get_endianness()
         
-        md = Cs(CS_ARCH_RISCV, arch_mode + endianness)
+        md = Cs(CS_MODE_RISCV64, arch_mode + endianness)
         
         if endianness == CS_MODE_LITTLE_ENDIAN:
             gadget_links = [re.compile(b"[\x00-\xff]{3}" + RISCV_CONSTANTS.JAL_OPCODE),
@@ -66,4 +66,9 @@ class ROP():
 
     def list_gadgets(self):
         self.__get_JOP_gadgets()
-        self.__gadgets.list_all()
+
+        if self.__gadgets.is_empty():
+            print("No gadgets were found")
+        else:
+            self.__gadgets.list_all()
+            print("\n----------- end of gadgets --------------")

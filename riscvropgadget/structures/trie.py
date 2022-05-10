@@ -7,9 +7,11 @@ class Trie():
     def __init__(self):
         self.__root = TrieNode()
         self.__current_chain = ""
+        self.__empty = True
      
     def insert(self, chain):
         node = self.__root
+        self.__empty = False
  
         for op in chain:
             if op in node.children:
@@ -24,6 +26,9 @@ class Trie():
     def list_all(self):
         for chain in self.__dfs(self.__root):
             print(chain[-1::-1])
+
+    def is_empty(self):
+        return self.__empty
 
     def __dfs(self, node):
         if node.is_end:
