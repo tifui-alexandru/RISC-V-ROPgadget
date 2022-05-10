@@ -15,7 +15,9 @@ class ELF_flags():
 
     EM_RISCV = 0xF3
 
-class Elf32_Ehdr(binary):
+# Parsers for little endian
+
+class Elf32_Ehdr(LittleEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -34,7 +36,7 @@ class Elf32_Ehdr(binary):
                 ]
 
 
-class Elf64_Ehdr(binary):
+class Elf64_Ehdr(LittleEndianStructure):
     _fields_ =  [
                     ("e_ident",         c_ubyte * 16),
                     ("e_type",          c_ushort),
@@ -53,7 +55,7 @@ class Elf64_Ehdr(binary):
                 ]
 
 
-class Elf32_Phdr(binary):
+class Elf32_Phdr(LittleEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_offset",        c_uint),
@@ -66,7 +68,7 @@ class Elf32_Phdr(binary):
                 ]
 
 
-class Elf64_Phdr(binary):
+class Elf64_Phdr(LittleEndianStructure):
     _fields_ =  [
                     ("p_type",          c_uint),
                     ("p_flags",         c_uint),
@@ -79,7 +81,7 @@ class Elf64_Phdr(binary):
                 ]
 
 
-class Elf32_Shdr(binary):
+class Elf32_Shdr(LittleEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -94,7 +96,102 @@ class Elf32_Shdr(binary):
                 ]
 
 
-class Elf64_Shdr(binary):
+class Elf64_Shdr(LittleEndianStructure):
+    _fields_ =  [
+                    ("sh_name",         c_uint),
+                    ("sh_type",         c_uint),
+                    ("sh_flags",        c_ulonglong),
+                    ("sh_addr",         c_ulonglong),
+                    ("sh_offset",       c_ulonglong),
+                    ("sh_size",         c_ulonglong),
+                    ("sh_link",         c_uint),
+                    ("sh_info",         c_uint),
+                    ("sh_addralign",    c_ulonglong),
+                    ("sh_entsize",      c_ulonglong),
+                ]
+
+# Parsers for big endian
+
+class Elf32_Ehdr(BigEndianStructure):
+    _fields_ =  [
+                    ("e_ident",         c_ubyte * 16),
+                    ("e_type",          c_ushort),
+                    ("e_machine",       c_ushort),
+                    ("e_version",       c_uint),
+                    ("e_entry",         c_uint),
+                    ("e_phoff",         c_uint),
+                    ("e_shoff",         c_uint),
+                    ("e_flags",         c_uint),
+                    ("e_ehsize",        c_ushort),
+                    ("e_phentsize",     c_ushort),
+                    ("e_phnum",         c_ushort),
+                    ("e_shentsize",     c_ushort),
+                    ("e_shnum",         c_ushort),
+                    ("e_shstrndx",      c_ushort),
+                ]
+
+
+class Elf64_Ehdr(BigEndianStructure):
+    _fields_ =  [
+                    ("e_ident",         c_ubyte * 16),
+                    ("e_type",          c_ushort),
+                    ("e_machine",       c_ushort),
+                    ("e_version",       c_uint),
+                    ("e_entry",         c_ulonglong),
+                    ("e_phoff",         c_ulonglong),
+                    ("e_shoff",         c_ulonglong),
+                    ("e_flags",         c_uint),
+                    ("e_ehsize",        c_ushort),
+                    ("e_phentsize",     c_ushort),
+                    ("e_phnum",         c_ushort),
+                    ("e_shentsize",     c_ushort),
+                    ("e_shnum",         c_ushort),
+                    ("e_shstrndx",      c_ushort),
+                ]
+
+
+class Elf32_Phdr(BigEndianStructure):
+    _fields_ =  [
+                    ("p_type",          c_uint),
+                    ("p_offset",        c_uint),
+                    ("p_vaddr",         c_uint),
+                    ("p_paddr",         c_uint),
+                    ("p_filesz",        c_uint),
+                    ("p_memsz",         c_uint),
+                    ("p_flags",         c_uint),
+                    ("p_align",         c_uint),
+                ]
+
+
+class Elf64_Phdr(BigEndianStructure):
+    _fields_ =  [
+                    ("p_type",          c_uint),
+                    ("p_flags",         c_uint),
+                    ("p_offset",        c_ulonglong),
+                    ("p_vaddr",         c_ulonglong),
+                    ("p_paddr",         c_ulonglong),
+                    ("p_filesz",        c_ulonglong),
+                    ("p_memsz",         c_ulonglong),
+                    ("p_align",         c_ulonglong),
+                ]
+
+
+class Elf32_Shdr(BigEndianStructure):
+    _fields_ =  [
+                    ("sh_name",         c_uint),
+                    ("sh_type",         c_uint),
+                    ("sh_flags",        c_uint),
+                    ("sh_addr",         c_uint),
+                    ("sh_offset",       c_uint),
+                    ("sh_size",         c_uint),
+                    ("sh_link",         c_uint),
+                    ("sh_info",         c_uint),
+                    ("sh_addralign",    c_uint),
+                    ("sh_entsize",      c_uint),
+                ]
+
+
+class Elf64_Shdr(BigEndianStructure):
     _fields_ =  [
                     ("sh_name",         c_uint),
                     ("sh_type",         c_uint),
@@ -184,14 +281,23 @@ class ELF():
             for i in range(shdr_num):
                 self.__shdr_l[i].str_name = string_table[self.__shdr_l[i].sh_name:].split(b'\x00')[0].decode('utf8')
 
+    def get_arch_mode(self):
+        if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
+            return CS_MODE_32
+        else:
+            return CS_MODE_64
+
     def get_endianness(self):
         if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
-            return "little"
+            return CS_MODE_LITTLE_ENDIAN
         else:
-            return "big"
+            return CS_MODE_BIG_ENDIAN
 
     def get_exec_sections(self):
         PR_X = 0x1
 
-        return [bytes(self.__binary[segment.p_offset : segment.p_offset + segment.p_memsz])
+        return [{
+                    "code":  bytes(self.__binary[segment.p_offset : segment.p_offset + segment.p_memsz]),
+                    "vaddr": segment.p_vaddr
+                }
                 for segment in self.__phdr_l if segment.p_flags & PR_X]
