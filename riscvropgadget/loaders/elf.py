@@ -302,9 +302,9 @@ class ELF():
 
     def get_arch_mode(self):
         if self.__ehdr.e_ident[ELF_flags.EI_CLASS] == ELF_flags.ELFCLASS32:
-            return CS_MODE_32
+            return CS_MODE_RISCV32
         else:
-            return CS_MODE_64
+            return CS_MODE_RISCV64
 
     def get_endianness(self):
         if self.__ehdr.e_ident[ELF_flags.EI_DATA] == ELF_flags.ELFDATA2LSB:
