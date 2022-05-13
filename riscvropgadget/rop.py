@@ -10,11 +10,19 @@ class RISCV_CONSTANTS():
     JAL_REG_EX  = re.compile(b"[\x6f\xef][\x00-\xff]{3}")
     JALR_REG_EX = re.compile(b"[\x67\xe7][\x00-\xff]{3}") 
 
+    ARITHMETIC_REG_EX = re.compile(b"[\x13\x93][\x00-\xff]{3}")
+
+class CHAIN_TYPE():
+    ARITHMETIC = 1
+    OTHER = 2
+
 class ROP():
     def __init__(self, binary):
         self.__binary  = binary
-        self.__gadgets = Trie()
-        self.__gadgets_max_len = 10
+        self.__gadgets_max_len = 20
+
+        self.__JOP_arithmetic_gadgets = Trie()
+        self.__JOP_gadgets = Trie()
 
         self.__arch_mode = self.__binary.get_arch_mode()
         self.__endianness = self.__binary.get_endianness()
@@ -32,12 +40,13 @@ class ROP():
 
         exec_sections = self.__binary.get_exec_sections()
 
-        if self.__binary.get_endianness() == CS_MODE_BIG_ENDIAN:
+        if self.__endianness == CS_MODE_BIG_ENDIAN:
             exec_sections = [section[::-1] for section in exec_sections] # convert to little endian
 
         for section in exec_sections:
             current_chain = []
             found_gadgets = False
+            chain_type = CHAIN_TYPE.OTHER
 
             code = section["code"]
             vaddr = section["vaddr"]
@@ -49,21 +58,29 @@ class ROP():
                 if self.__is_gadget_link(instruction, gadget_links):
                     current_chain = []
                     found_gadgets = True
+                    chain_type = CHAIN_TYPE.OTHER
                 
                 if len(current_chain) < self.__gadgets_max_len and found_gadgets:
                     current_chain.append(instruction)
-                    self.__gadgets.insert(current_chain, vaddr + instruction_start)
-                    
 
-    def list_gadgets(self):
-        self.__get_JOP_gadgets()
-        
-        # exit(0)
+                    if RISCV_CONSTANTS.ARITHMETIC_REG_EX.match(instruction):
+                        chain_type = CHAIN_TYPE.ARITHMETIC
 
-        if self.__gadgets.is_empty():
+                    if chain_type == CHAIN_TYPE.ARITHMETIC:
+                        self.__JOP_arithmetic_gadgets.insert(current_chain, vaddr + instruction_start)
+                    else:
+                        self.__JOP_gadgets.insert(current_chain, vaddr + instruction_start)
+
+    def __print_gadgets(self, gadgets, message):
+        print(message)
+        print("-" * 44, "\n")
+
+        total_gadgets = 0
+
+        if gadgets.is_empty():
             print("No gadgets were found")
         else:
-            for rop_chain in self.__gadgets.list_all():
+            for rop_chain in gadgets.list_all():
                 code = b"".join(rop_chain["code"][::-1])
                 vaddr = rop_chain["vaddr"]
 
@@ -81,6 +98,13 @@ class ROP():
                     rop_decoded += i.mnemonic + " " + i.op_str + " ; "
 
                 if len(rop_decoded) > 0:
+                    total_gadgets += 1
                     print(rop_decoded)
 
-            print("\n----------- end of gadgets --------------")
+        print("\n-------------- end of gadgets --------------")
+        print("A total of", total_gadgets, "were found \n\n")
+
+    def list_gadgets(self):
+        self.__get_JOP_gadgets()
+        self.__print_gadgets(self.__JOP_arithmetic_gadgets, "Arithmetic JOP gadgets")
+        self.__print_gadgets(self.__JOP_gadgets, "JOP gadgets")
