@@ -122,7 +122,7 @@ class ROP():
             if cnt_lines % 5 == 0:
                 print("\n")
 
-        print("\n-------------- end of gadgets --------------")
+        print("\n-------------- end of gadgets --------------\n\n\n")
 
     def list_gadgets(self):
         self.__get_JOP_gadgets()
