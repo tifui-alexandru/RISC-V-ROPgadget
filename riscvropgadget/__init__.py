@@ -1,7 +1,6 @@
 import argparse 
 
 import riscvropgadget.loaders
-import riscvropgadget.structures
 
 def main():
     parser = argparse.ArgumentParser()
