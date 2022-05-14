@@ -15,6 +15,9 @@ class GADGET_TYPE():
     POP        = 0b01
     ARITHMETIC = 0b10
 
+    UNCOMPRESSED = 0
+    COMPRESSED   = 1
+
 class ROP():
     def __init__(self, binary):
         self.__binary  = binary
@@ -22,9 +25,14 @@ class ROP():
 
         # key   -> gadget
         # value -> gadget's vaddr
-        self.__JOP_pop_gadgets = dict()
-        self.__JOP_arithmetic_gadgets = dict()
-        self.__JOP_gadgets = dict()
+        # 0 -> uncompressed instructions
+        # 1 -> compressed instructions
+        self.__JOP_pop_gadgets        = (dict(), dict())
+        self.__JOP_arithmetic_gadgets = (dict(), dict())
+        self.__JOP_gadgets            = (dict(), dict())
+
+        
+        self.__compressed_state = GADGET_TYPE.UNCOMPRESSED
 
         # duplicate gadgets may occur due to gadget classification
 
@@ -32,6 +40,7 @@ class ROP():
         self.__endianness = self.__binary.get_endianness()
         
         self.__md = Cs(CS_ARCH_RISCV, self.__arch_mode)
+        self.__md_compressed = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC)
 
     def __is_gadget_link(self, instruction, gadget_links):
         for pattern in gadget_links:
@@ -80,7 +89,9 @@ class ROP():
                     gadget = instruction + gadget
 
                     if self.__has_compressed_instructions(gadget):
-                        break # compressed instructions are not supported yet  
+                        self.__compressed_state = GADGET_TYPE.COMPRESSED
+                    else:
+                        self.__compressed_state = GADGET_TYPE.UNCOMPRESSED
 
                     if RISCV_CONSTANTS.POP_REG_EX.match(instruction):
                         gadget_type |= GADGET_TYPE.POP                          
@@ -93,16 +104,16 @@ class ROP():
                     determined_gadget_type = False
 
                     if gadget_type & GADGET_TYPE.POP:
-                        self.__JOP_pop_gadgets[gadget] = vaddr + instruction_start
+                        self.__JOP_pop_gadgets[self.__compressed_state][gadget] = vaddr + instruction_start
                         determined_gadget_type = True
                     if gadget_type & GADGET_TYPE.ARITHMETIC:
-                        self.__JOP_arithmetic_gadgets[gadget] = vaddr + instruction_start
+                        self.__JOP_arithmetic_gadgets[self.__compressed_state][gadget] = vaddr + instruction_start
                         determined_gadget_type = True
                     
                     if determined_gadget_type == False:
-                        self.__JOP_gadgets[gadget] = vaddr + instruction_start
-                    
-    def __print_gadgets(self, gadgets, message):
+                        self.__JOP_gadgets[self.__compressed_state][gadget] = vaddr + instruction_start
+
+    def __print_gadgets(self, md, gadgets, message,):
         print(message)
         print("A total of", len(gadgets), "gadgets were found \n\n")
         print("-" * 44, "\n")
@@ -113,7 +124,7 @@ class ROP():
             vaddr = gadgets[gadget]
             gad_str = ""
 
-            for i in self.__md.disasm(gadget, vaddr):
+            for i in md.disasm(gadget, vaddr):
                 gad_str += i.mnemonic + " " + i.op_str + " ; "
 
             print(hex(vaddr), ":", gad_str)
@@ -122,12 +133,23 @@ class ROP():
             if cnt_lines % 5 == 0:
                 print("\n")
 
-        print("\n-------------- end of gadgets --------------")
+        print("\n-------------- end of gadgets --------------\n\n\n\n\n")
 
     def list_gadgets(self):
         self.__get_JOP_gadgets()
 
-        print(len(self.__JOP_arithmetic_gadgets) + len(self.__JOP_gadgets) + len(self.__JOP_pop_gadgets), "gadgets found\n\n")
-        self.__print_gadgets(self.__JOP_pop_gadgets, "POP JOP gadgets")
-        self.__print_gadgets(self.__JOP_arithmetic_gadgets, "Arithmetic JOP gadgets")
-        self.__print_gadgets(self.__JOP_gadgets, "JOP gadgets")
+        print(len(self.__JOP_arithmetic_gadgets[GADGET_TYPE.UNCOMPRESSED]) + \
+              len(self.__JOP_gadgets[GADGET_TYPE.UNCOMPRESSED]) + \
+              len(self.__JOP_pop_gadgets[GADGET_TYPE.UNCOMPRESSED]), \
+              "uncompressed gadgets found\n\n")
+        self.__print_gadgets(self.__md, self.__JOP_pop_gadgets[GADGET_TYPE.UNCOMPRESSED], "POP JOP gadgets")
+        self.__print_gadgets(self.__md, self.__JOP_arithmetic_gadgets[GADGET_TYPE.UNCOMPRESSED], "Arithmetic JOP gadgets")
+        self.__print_gadgets(self.__md, self.__JOP_gadgets[GADGET_TYPE.UNCOMPRESSED], "JOP gadgets")
+
+        print(len(self.__JOP_arithmetic_gadgets[GADGET_TYPE.COMPRESSED]) + \
+              len(self.__JOP_gadgets[GADGET_TYPE.COMPRESSED]) + \
+              len(self.__JOP_pop_gadgets[GADGET_TYPE.COMPRESSED]), \
+              "compressed gadgets found\n\n")
+        self.__print_gadgets(self.__md_compressed, self.__JOP_pop_gadgets[GADGET_TYPE.COMPRESSED], "POP JOP gadgets")
+        self.__print_gadgets(self.__md_compressed, self.__JOP_arithmetic_gadgets[GADGET_TYPE.COMPRESSED], "Arithmetic JOP gadgets")
+        self.__print_gadgets(self.__md_compressed, self.__JOP_gadgets[GADGET_TYPE.COMPRESSED], "JOP gadgets")
