@@ -1,0 +1,33 @@
+Compressed Arithmetic JOP gadgets
+A total of 23 gadgets were found 
+
+--------------------------------------------
+0x103ac : addi t1, t1, -0x2c ; 
+0x103b0 : addi t0, t2, -0x3a0 ; 
+0x103b4 : srli t1, t1, 1 ; 
+0x103b6 : addi zero, t1, -0x4d8 ; 
+0x103dc : nop  ; 
+
+0x103ea : addi a0, a0, 0xa8 ; 
+0x103f2 : andi sp, sp, -0x10 ; 
+0x103fa : addi a3, a3, 0xb6 ; 
+0x10402 : addi a4, a4, 0x106 ; 
+0x10412 : addi gp, gp, 0x3f2 ; 
+
+0x1041e : mv a5, a0 ; 
+0x10422 : mv a4, a4 ; 
+0x1045e : mv t1, t1 ; 
+0x10466 : mv a0, a0 ; 
+0x10440 : mv a1, a0 ; 
+
+0x10446 : mv a5, a5 ; 
+0x1044c : srai a4, a5, 3 ; 
+0x10450 : srli a1, a5, 0x3f ; 
+0x10498 : addi a0, a5, 0x508 ; 
+0x104b6 : addi s0, s0, -0x692 ; 
+
+0x104be : addi s2, s2, -0x692 ; 
+0x104d0 : srai s2, s2, 3 ; 
+0x10586 : addi s5, s0, 0xc9 ; 
+
+-------------- end of gadgets --------------

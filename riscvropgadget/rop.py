@@ -9,8 +9,14 @@ class RISCV_CONSTANTS():
     JAL_REG_EX  = re.compile(b"[\x6f\xef][\x00-\xff]{3}")
     JALR_REG_EX = re.compile(b"[\x67\xe7][\x00-\xff]{3}") 
 
+    JAL_C_REG_EX = re.compile(b"")
+    JALR_C_REG_EX = re.compile(b"")
+
     POP_REG_EX = re.compile(b"[\x03\x83][\x00-\x7f][\x01\x11\x21\x31\x41\x51\x61\x71\x81\x91\xa1\xb1\xc1\xd1\xe1\xf1][\x00-\xff]")
     ARITHMETIC_REG_EX = re.compile(b"[\x13\x93][\x00-\xff]{3}")
+
+    POP_C_REG_EX = re.compile(b"[\x03\x83][\x00-\x7f][\x01\x11\x21\x31\x41\x51\x61\x71\x81\x91\xa1\xb1\xc1\xd1\xe1\xf1][\x00-\xff]")
+    ARITHMETIC_C_REG_EX = re.compile(b"[\x13\x93][\x00-\xff]{3}")    
 
 class GADGET_TYPE():
     POP        = 0b01
@@ -69,6 +75,8 @@ class GadgetsCollection():
         return None
 
     def find_gadgets(self, exec_sections, gadgets_max_len):
+        print(f"Searching for {self.__output_msg} ...")
+
         for section in exec_sections:
             code = section["code"]
             vaddr = section["vaddr"]
@@ -153,7 +161,7 @@ class ROP():
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX],
-                output_filename   = self.__out_dir_path + "/" + "pop_jop_gadgets.txt",
+                output_filename   = self.__out_dir_path + "/" + "uncompressed_pop_jop_gadgets.txt",
                 output_msg        = "POP JOP gadgets",
                 md                = Cs(CS_ARCH_RISCV, self.__arch_mode)
             ),
@@ -162,7 +170,7 @@ class ROP():
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.ARITHMETIC_REG_EX],
-                output_filename   = self.__out_dir_path + "/" + "arithmetic_jop_gadgets.txt",
+                output_filename   = self.__out_dir_path + "/" + "uncompressed_arithmetic_jop_gadgets.txt",
                 output_msg        = "Arithmetic JOP gadgets",
                 md                = Cs(CS_ARCH_RISCV, self.__arch_mode)
             ),
@@ -171,9 +179,41 @@ class ROP():
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX, RISCV_CONSTANTS.ARITHMETIC_REG_EX],
-                output_filename   = self.__out_dir_path + "/" + "jop_gadgets.txt",
+                output_filename   = self.__out_dir_path + "/" + "uncompressed_jop_gadgets.txt",
                 output_msg        = "JOP gadgets",
                 md                = Cs(CS_ARCH_RISCV, self.__arch_mode),
+                exclude_regex=True
+            ),
+
+            # Compressed POP JOP gadgets
+            GadgetsCollection(
+                ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX, 
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX, RISCV_CONSTANTS.POP_C_REG_EX],
+                output_filename   = self.__out_dir_path + "/" + "compressed_pop_jop_gadgets.txt",
+                output_msg        = "Compressed POP JOP gadgets",
+                md                = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC)
+            ),
+
+            # Compressed Arithmetic JOP gadgets
+            GadgetsCollection(
+                ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX,
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                type_gadget_regex = [RISCV_CONSTANTS.ARITHMETIC_REG_EX, RISCV_CONSTANTS.ARITHMETIC_C_REG_EX],
+                output_filename   = self.__out_dir_path + "/" + "compressed_arithmetic_jop_gadgets.txt",
+                output_msg        = "Compressed Arithmetic JOP gadgets",
+                md                = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC)
+            ),
+
+            # Compressed Usual JOP gadgets
+            GadgetsCollection(
+                ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX,
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX, RISCV_CONSTANTS.ARITHMETIC_REG_EX,
+                                    RISCV_CONSTANTS.POP_C_REG_EX, RISCV_CONSTANTS.ARITHMETIC_C_REG_EX],
+                output_filename   = self.__out_dir_path + "/" + "compressed_jop_gadgets.txt",
+                output_msg        = "Compressed JOP gadgets",
+                md                = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC),
                 exclude_regex=True
             )
         ]
@@ -182,7 +222,7 @@ class ROP():
         total_gadgets = 0
 
         for col in self.__gadgets_collections_list:
-            col.find_gadgets(self.__exec_sections, RISCV_CONSTANTS.INSTRUCTION_LEN * 10)
+            col.find_gadgets(self.__exec_sections, RISCV_CONSTANTS.INSTRUCTION_LEN * self.__gadgets_max_len)
             total_gadgets += col.get_size()
 
         return total_gadgets

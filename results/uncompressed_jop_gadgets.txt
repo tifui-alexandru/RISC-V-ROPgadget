@@ -1,0 +1,33 @@
+JOP gadgets
+A total of 23 gadgets were found 
+
+--------------------------------------------
+0x10255 : jal t3, 0x12802 ; 
+0x10317 : jal t3, 0x62802 ; 
+0x103e0 : jal 0x2e ; 
+0x103dc : nop  ; jal 0x2e ; 
+0x10408 : jal -0x48 ; 
+
+0x1047a : jal -0x60 ; 
+0x1049c : jal -0xcc ; 
+0x10498 : addi a0, a5, 0x508 ; jal -0xcc ; 
+0x1050c : j 0x72ef4 ; 
+0x103bc : jr t3 ; 
+
+0x103b8 : ld t0, 8(t0) ; jr t3 ; 
+0x103b4 : srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+0x103b0 : addi t0, t2, -0x3a0 ; srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+0x103ac : addi t1, t1, -0x2c ; addi t0, t2, -0x3a0 ; srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+0x103a8 : ld t3, -0x3a0(t2) ; addi t1, t1, -0x2c ; addi t0, t2, -0x3a0 ; srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+
+0x103a4 : sub t1, t1, t3 ; ld t3, -0x3a0(t2) ; addi t1, t1, -0x2c ; addi t0, t2, -0x3a0 ; srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+0x103a0 : auipc t2, 2 ; sub t1, t1, t3 ; ld t3, -0x3a0(t2) ; addi t1, t1, -0x2c ; addi t0, t2, -0x3a0 ; srli t1, t1, 1 ; ld t0, 8(t0) ; jr t3 ; 
+0x103d8 : jalr t1, t3, 0 ; 
+0x103c4 : ld t3, -0x3b0(t3) ; jalr t1, t3, 0 ; 
+0x103c0 : auipc t3, 2 ; ld t3, -0x3b0(t3) ; jalr t1, t3, 0 ; 
+
+0x103d4 : ld t3, -0x3b8(t3) ; jalr t1, t3, 0 ; 
+0x103d0 : auipc t3, 2 ; ld t3, -0x3b8(t3) ; jalr t1, t3, 0 ; 
+0x103cc : nop  ; auipc t3, 2 ; ld t3, -0x3b8(t3) ; jalr t1, t3, 0 ; 
+
+-------------- end of gadgets --------------
