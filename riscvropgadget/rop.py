@@ -16,6 +16,94 @@ class GADGET_TYPE():
     POP        = 0b01
     ARITHMETIC = 0b10
 
+class GadgetsCollection():
+    def __init__(self, ret_gadget_regex, type_gadget_regex, md):
+        self.__ret_gadget_regex = ret_gadget_regex
+        self.__type_gadget_regex = type_gadget_regex
+        self.__md = md
+
+        # key   -> gadget
+        # value -> gadget's vaddr
+        self.__gadgets = dict()
+
+    def __is_ret(self, instruction):
+        for pattern in self.__ret_gadget_regex:
+            if pattern.match(instruction):
+                return True
+        return False
+
+    def __is_type(self, instruction):
+        for pattern in self.__type_gadget_regex:
+            if pattern.match(instruction):
+                return True
+        return False
+
+    def __check_valid_gadget(self, gadget):
+        # to be valid a gadget needs to be decoded completely
+        # it also needs to be the right type of gadget
+
+        decoded_size = 0
+        corret_type = False
+
+        for i in self.__md.disassm(gadget):
+            bytecode = gadget[decoded_size : decoded_size + i.size]
+            if self.__is_type(bytecode):
+                corret_type = True
+
+            decoded_size += i.size
+
+        return (decoded_size == len(gadget) and corret_type == True)
+
+    def find_gadgets(self, exec_sections, gadgets_max_len):
+        for section in exec_sections:
+            code = section["code"]
+            vaddr = section["vaddr"]
+
+            ret_gadgets = []
+            for pattern in self.__ret_gadget_regex:
+                ret_gadgets += [match.start() for match in re.finditer(pattern, code)]
+
+            for ret_gadget in ret_gadgets:
+                ret_start = ret_gadget
+                ret_len = next(self.__md.disassm(code[ret_start], 0x1000)).size
+                gadget_end = ret_gadget + ret_len
+
+                for i in range(gadgets_max_len):
+                    gadget_start = ret_start - i
+                    gadget = code[gadget_start : gadget_end]
+
+                    if self.__check_valid_gadget(gadget):
+                        new_instruction_len = next(self.__md.disassm(code[gadget_start], 0x1000)).size
+                        new_instruction = code[new_instruction : new_instruction + new_instruction_len]
+
+                        if i > 0 and self.__is_ret(new_instruction):
+                            break # new gadget begins
+                        
+                        self.__gadgets[gadget] = vaddr + gadget_start
+
+    def print_gadgets(self, filename, message):
+        with open(filename, "w") as fout:
+            fout.write(f"{message}\n")
+            fout.write(f"A total of {len(self.__gadgets)} gadgets were found \n\n")
+            fout.write(f"{'-' * 44}\n")
+
+            cnt_lines = 0
+
+            for gadget in self.__gadgets.keys():
+                vaddr = self.__gadgets[gadget]
+                gad_str = ""
+
+                for i in self.__md.disasm(gadget, vaddr):
+                    gad_str += i.mnemonic + " " + i.op_str + " ; "
+
+                fout.write(f"{hex(vaddr)} : {gad_str}\n")
+                
+                cnt_lines += 1
+                if cnt_lines % 5 == 0:
+                    fout.write("\n")
+
+            fout.write("\n-------------- end of gadgets --------------")
+
 class ROP():
     def __init__(self, binary):
         self.__binary  = binary
@@ -27,26 +115,30 @@ class ROP():
         if os.path.isdir(self.__out_dir_path) == False:
             os.mkdir(self.__out_dir_path)
 
+        self.__arch_mode = self.__binary.get_arch_mode()
+        self.__endianness = self.__binary.get_endianness()
+
         # key   -> gadget
         # value -> gadget's vaddr
-        self.__JOP_pop_gadgets = dict()
-        self.__JOP_arithmetic_gadgets = dict()
-        self.__JOP_gadgets = dict()
-
-        self.__NOP_gadgets = dict()
+        self.__JOP_pop_gadgets = GadgetsCollection(
+            [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
+            [RISCV_CONSTANTS.POP_REG_EX],
+            Cs(CS_ARCH_RISCV, self.__arch_mode)
+        )
+        self.__JOP_arithmetic_gadgets = GadgetsCollection(
+            [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
+            [RISCV_CONSTANTS.ARITHMETIC_REG_EX],
+            Cs(CS_ARCH_RISCV, self.__arch_mode)
+        )
+        self.__JOP_gadgets = GadgetsCollection(
+            [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX],
+            [RISCV_CONSTANTS.POP_REG_EX],
+            Cs(CS_ARCH_RISCV, self.__arch_mode)
+        )
 
         # duplicate gadgets may occur due to gadget classification
 
-        self.__arch_mode = self.__binary.get_arch_mode()
-        self.__endianness = self.__binary.get_endianness()
         
-        self.__md = Cs(CS_ARCH_RISCV, self.__arch_mode)
-
-    def __is_gadget_link(self, instruction, gadget_links):
-        for pattern in gadget_links:
-            if pattern.match(instruction):
-                return True
-        return False
 
     def __has_compressed_instructions(self, gadget):
         cnt = 0
