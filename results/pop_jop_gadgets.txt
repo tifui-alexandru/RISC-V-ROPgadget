@@ -1,0 +1,8 @@
+POP JOP gadgets
+A total of 2 gadgets were found 
+
+--------------------------------------------
+0x1c07f : lwu t1, 0x68(sp) ; addi s8, a0, 0x106 ; jalr a6, s2, -0x7ca ; 
+0x1c07b : beq a6, s3, -0xf9a ; lwu t1, 0x68(sp) ; addi s8, a0, 0x106 ; jalr a6, s2, -0x7ca ; 
+
+-------------- end of gadgets --------------

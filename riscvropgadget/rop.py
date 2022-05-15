@@ -1,4 +1,5 @@
 import re
+import os
 from ctypes import *
 from capstone import *
 
@@ -20,11 +21,19 @@ class ROP():
         self.__binary  = binary
         self.__gadgets_max_len = 10
 
+        # create output directory if it doesn't exist
+        self.__out_dir_path = os.getcwd()
+        self.__out_dir_path += "/results"
+        if os.path.isdir(self.__out_dir_path) == False:
+            os.mkdir(self.__out_dir_path)
+
         # key   -> gadget
         # value -> gadget's vaddr
         self.__JOP_pop_gadgets = dict()
         self.__JOP_arithmetic_gadgets = dict()
         self.__JOP_gadgets = dict()
+
+        self.__NOP_gadgets = dict()
 
         # duplicate gadgets may occur due to gadget classification
 
@@ -82,6 +91,11 @@ class ROP():
                     if self.__has_compressed_instructions(gadget):
                         break # compressed instructions are not supported yet  
 
+                    if len(gadget) == RISCV_CONSTANTS.INSTRUCTION_LEN:
+                        # the gadget si simply a jump
+                        self.__NOP_gadgets[gadget] = vaddr + instruction_start
+                        continue
+
                     if RISCV_CONSTANTS.POP_REG_EX.match(instruction):
                         gadget_type |= GADGET_TYPE.POP                          
 
@@ -102,32 +116,38 @@ class ROP():
                     if determined_gadget_type == False:
                         self.__JOP_gadgets[gadget] = vaddr + instruction_start
                     
-    def __print_gadgets(self, gadgets, message):
-        print(message)
-        print("A total of", len(gadgets), "gadgets were found \n\n")
-        print("-" * 44, "\n")
+    def __print_gadgets(self, filename, gadgets, message):
+        with open(self.__out_dir_path + "/" + filename, "w") as fout:
 
-        cnt_lines = 0
+            fout.write(f"{message}\n")
+            fout.write(f"A total of {len(gadgets)} gadgets were found \n\n")
+            fout.write(f"{'-' * 44}\n")
 
-        for gadget in gadgets.keys():
-            vaddr = gadgets[gadget]
-            gad_str = ""
+            cnt_lines = 0
 
-            for i in self.__md.disasm(gadget, vaddr):
-                gad_str += i.mnemonic + " " + i.op_str + " ; "
+            for gadget in gadgets.keys():
+                vaddr = gadgets[gadget]
+                gad_str = ""
 
-            print(hex(vaddr), ":", gad_str)
-            
-            cnt_lines += 1
-            if cnt_lines % 5 == 0:
-                print("\n")
+                for i in self.__md.disasm(gadget, vaddr):
+                    gad_str += i.mnemonic + " " + i.op_str + " ; "
 
-        print("\n-------------- end of gadgets --------------\n\n\n")
+                fout.write(f"{hex(vaddr)} : {gad_str}\n")
+                
+                cnt_lines += 1
+                if cnt_lines % 5 == 0:
+                    fout.write("\n")
+
+            fout.write("\n-------------- end of gadgets --------------")
 
     def list_gadgets(self):
         self.__get_JOP_gadgets()
 
-        print(len(self.__JOP_arithmetic_gadgets) + len(self.__JOP_gadgets) + len(self.__JOP_pop_gadgets), "gadgets found\n\n")
-        self.__print_gadgets(self.__JOP_pop_gadgets, "POP JOP gadgets")
-        self.__print_gadgets(self.__JOP_arithmetic_gadgets, "Arithmetic JOP gadgets")
-        self.__print_gadgets(self.__JOP_gadgets, "JOP gadgets")
+        print(len(self.__JOP_arithmetic_gadgets) + len(self.__JOP_gadgets) + len(self.__JOP_pop_gadgets), "gadgets found\n")
+        self.__print_gadgets("pop_jop_gadgets.txt", self.__JOP_pop_gadgets, "POP JOP gadgets")
+        self.__print_gadgets("arithmetic_jop_gadgets.txt", self.__JOP_arithmetic_gadgets, "Arithmetic JOP gadgets")
+        self.__print_gadgets("jop_gadgets.txt", self.__JOP_gadgets, "JOP gadgets")
+        
+        self.__print_gadgets("nop_gadgets", self.__NOP_gadgets, "NOP gadgets")
+
+        print(f"Results are available at {self.__out_dir_path}")
