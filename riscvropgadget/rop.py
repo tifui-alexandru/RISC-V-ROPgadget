@@ -8,6 +8,7 @@ class RISCV_CONSTANTS():
     
     JAL_REG_EX  = re.compile(b"[\x6f\xef][\x00-\xff]{3}")
     JALR_REG_EX = re.compile(b"[\x67\xe7][\x00-\xff]{3}") 
+    ECALL_REG_EX = re.compile(b"\x73\x00\x00\x00")
 
     JAL_C_REG_EX = re.compile(b"[\x01\x05\x09\x0d\x11\x15\x19\x1d" +
                               b"\x21\x25\x29\x2d\x31\x35\x39\x3d" + 
@@ -39,10 +40,6 @@ class RISCV_CONSTANTS():
                               b"\xa1\xa5\xa9\xad\xb1\xb5\xb9\xbd" +
                               b"\xc1\xc5\xc9\xcd\xd1\xd5\xd9\xdd" +
                               b"\xe1\xe5\xe9\xed\xf1\xf5\xf9\xfd][\x80-\x9f]")    
-
-class GADGET_TYPE():
-    POP        = 0b01
-    ARITHMETIC = 0b10
 
 class GadgetsCollection():
     def __init__(self, ret_gadget_regex, type_gadget_regex, md, output_filename, output_msg, exclude_regex = False):
@@ -161,7 +158,7 @@ class GadgetsCollection():
 class ROP():
     def __init__(self, binary):
         self.__binary  = binary
-        self.__gadgets_max_len = 10
+        self.__gadgets_max_len = 40
 
         # create output directory if it doesn't exist
         self.__out_dir_path = os.getcwd()
@@ -204,13 +201,13 @@ class ROP():
                 output_filename   = self.__out_dir_path + "/" + "uncompressed_jop_gadgets.txt",
                 output_msg        = "JOP gadgets",
                 md                = Cs(CS_ARCH_RISCV, self.__arch_mode),
-                exclude_regex=True
+                exclude_regex     = True
             ),
 
             # Compressed POP JOP gadgets
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX, 
-                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX, RISCV_CONSTANTS.JR_C_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX, RISCV_CONSTANTS.POP_C_REG_EX],
                 output_filename   = self.__out_dir_path + "/" + "compressed_pop_jop_gadgets.txt",
                 output_msg        = "Compressed POP JOP gadgets",
@@ -220,7 +217,7 @@ class ROP():
             # Compressed Arithmetic JOP gadgets
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX,
-                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX, RISCV_CONSTANTS.JR_C_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.ARITHMETIC_REG_EX, RISCV_CONSTANTS.ARITHMETIC_C_REG_EX],
                 output_filename   = self.__out_dir_path + "/" + "compressed_arithmetic_jop_gadgets.txt",
                 output_msg        = "Compressed Arithmetic JOP gadgets",
@@ -230,13 +227,33 @@ class ROP():
             # Compressed Usual JOP gadgets
             GadgetsCollection(
                 ret_gadget_regex  = [RISCV_CONSTANTS.JAL_REG_EX, RISCV_CONSTANTS.JALR_REG_EX,
-                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX],
+                                    RISCV_CONSTANTS.JAL_C_REG_EX, RISCV_CONSTANTS.JALR_C_REG_EX, RISCV_CONSTANTS.JR_C_REG_EX],
                 type_gadget_regex = [RISCV_CONSTANTS.POP_REG_EX, RISCV_CONSTANTS.ARITHMETIC_REG_EX,
                                     RISCV_CONSTANTS.POP_C_REG_EX, RISCV_CONSTANTS.ARITHMETIC_C_REG_EX],
                 output_filename   = self.__out_dir_path + "/" + "compressed_jop_gadgets.txt",
                 output_msg        = "Compressed JOP gadgets",
                 md                = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC),
-                exclude_regex=True
+                exclude_regex     = True
+            ),
+
+            # ECALL gadgets
+            GadgetsCollection(
+                ret_gadget_regex  = [RISCV_CONSTANTS.ECALL_REG_EX],
+                type_gadget_regex = [],
+                output_filename   = self.__out_dir_path + "/" + "uncompressed_ecall_gadgets.txt",
+                output_msg        = "ECALL gadgets",
+                md                = Cs(CS_ARCH_RISCV, self.__arch_mode),
+                exclude_regex     = True
+            ),
+
+            # Compressed ECALL gadgets
+            GadgetsCollection(
+                ret_gadget_regex  = [RISCV_CONSTANTS.ECALL_REG_EX],
+                type_gadget_regex = [],
+                output_filename   = self.__out_dir_path + "/" + "compressed_ecall_gadgets.txt",
+                output_msg        = "Compressed ECALL gadgets",
+                md                = Cs(CS_ARCH_RISCV, CS_MODE_RISCVC),
+                exclude_regex     = True
             )
         ]
 
