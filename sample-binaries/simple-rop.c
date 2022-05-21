@@ -4,9 +4,12 @@
 
 int main(int argc, char** argv) {
     printf("Try to hack me!\n");
-    size_t total_bytes = atoi(argv[1]);
+    
     char buffer[8];
-    memcpy(buffer, argv[2], total_bytes);
+    total_bytes = atoi(argv[1]);
+    read(0, buffer, total_bytes);
+    
     printf("Fail!\n");
+
     return 0;
 }
