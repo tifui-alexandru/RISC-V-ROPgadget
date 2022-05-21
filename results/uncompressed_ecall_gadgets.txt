@@ -2,59 +2,59 @@ ECALL gadgets
 A total of 45 gadgets were found 
 
 --------------------------------------------
-0x690f2 : ecall  ; 
-0x44978 : addi a7, zero, 0xac ; ecall  ; 
-0x14288 : sext.w a5, a0 ; ecall  ; 
-0x14284 : addi a7, zero, 0xb2 ; sext.w a5, a0 ; ecall  ; 
-0x2082e : addi a7, zero, 0x5e ; ecall  ; 
+0x69102 : ecall  ; 
+0x449a4 : addi a7, zero, 0xac ; ecall  ; 
+0x14298 : sext.w a5, a0 ; ecall  ; 
+0x14294 : addi a7, zero, 0xb2 ; sext.w a5, a0 ; ecall  ; 
+0x20bba : addi a7, zero, 0x5e ; ecall  ; 
 
-0x20a7c : addi a7, zero, 0x7c ; ecall  ; 
-0x20ad8 : addi a7, zero, 0x50 ; ecall  ; 
-0x2127e : addi a7, zero, 0x3f ; ecall  ; 
-0x2129a : addi a7, zero, 0x40 ; ecall  ; 
-0x20cba : addi a7, zero, 0x3e ; ecall  ; 
+0x20e08 : addi a7, zero, 0x7c ; ecall  ; 
+0x20e64 : addi a7, zero, 0x50 ; ecall  ; 
+0x2160a : addi a7, zero, 0x3f ; ecall  ; 
+0x21626 : addi a7, zero, 0x40 ; ecall  ; 
+0x21046 : addi a7, zero, 0x3e ; ecall  ; 
 
-0x210c8 : addi a7, zero, 0x39 ; ecall  ; 
-0x210f8 : beq a1, a4, 0x20 ; ecall  ; 
-0x21260 : addi a7, zero, 0x38 ; ecall  ; 
-0x21234 : beq a5, a4, 0x24 ; addi a7, zero, 0x38 ; ecall  ; 
-0x2127a : jal 0xf2e ; addi a7, zero, 0x3f ; ecall  ; 
+0x21454 : addi a7, zero, 0x39 ; ecall  ; 
+0x21484 : beq a1, a4, 0x20 ; ecall  ; 
+0x215ec : addi a7, zero, 0x38 ; ecall  ; 
+0x215c0 : beq a5, a4, 0x24 ; addi a7, zero, 0x38 ; ecall  ; 
+0x21606 : jal 0xf2e ; addi a7, zero, 0x3f ; ecall  ; 
 
-0x213c2 : addi a7, zero, 0xde ; ecall  ; 
-0x213be : bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
-0x213ba : slli a6, a5, 0x34 ; bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
-0x213b6 : jal 0xdf2 ; slli a6, a5, 0x34 ; bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
-0x213e8 : addi a7, zero, 0xd7 ; ecall  ; 
+0x2174e : addi a7, zero, 0xde ; ecall  ; 
+0x2174a : bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
+0x21746 : slli a6, a5, 0x34 ; bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
+0x21742 : jal 0xdf2 ; slli a6, a5, 0x34 ; bnez a6, 0x14 ; addi a7, zero, 0xde ; ecall  ; 
+0x21774 : addi a7, zero, 0xd7 ; ecall  ; 
 
-0x21400 : addi a7, zero, 0xe2 ; ecall  ; 
-0x21418 : addi a7, zero, 0xe9 ; ecall  ; 
-0x22178 : addi a7, zero, 0xd8 ; ecall  ; 
-0x22190 : addi a7, zero, 0xb3 ; ecall  ; 
-0x39a88 : addi a7, zero, 0xa0 ; ecall  ; 
+0x2178c : addi a7, zero, 0xe2 ; ecall  ; 
+0x217a4 : addi a7, zero, 0xe9 ; ecall  ; 
+0x22504 : addi a7, zero, 0xd8 ; ecall  ; 
+0x2251c : addi a7, zero, 0xb3 ; ecall  ; 
+0x39ab4 : addi a7, zero, 0xa0 ; ecall  ; 
 
-0x39a84 : jal -0x178dc ; addi a7, zero, 0xa0 ; ecall  ; 
-0x39aa0 : addi a7, zero, 0xae ; ecall  ; 
-0x39aac : addi a7, zero, 0xaf ; ecall  ; 
-0x39ab8 : addi a7, zero, 0xb0 ; ecall  ; 
-0x39ac4 : addi a7, zero, 0xb1 ; ecall  ; 
+0x39ab0 : jal -0x1757c ; addi a7, zero, 0xa0 ; ecall  ; 
+0x39acc : addi a7, zero, 0xae ; ecall  ; 
+0x39ad8 : addi a7, zero, 0xaf ; ecall  ; 
+0x39ae4 : addi a7, zero, 0xb0 ; ecall  ; 
+0x39af0 : addi a7, zero, 0xb1 ; ecall  ; 
 
-0x39ada : addi a3, zero, 0x100 ; ecall  ; 
-0x39ad6 : addi a0, zero, -0x64 ; addi a3, zero, 0x100 ; ecall  ; 
-0x39ad2 : addi a7, zero, 0x4f ; addi a0, zero, -0x64 ; addi a3, zero, 0x100 ; ecall  ; 
-0x39b0e : addi a7, zero, 0x4f ; ecall  ; 
-0x39c20 : addi a7, zero, 0xd6 ; ecall  ; 
+0x39b06 : addi a3, zero, 0x100 ; ecall  ; 
+0x39b02 : addi a0, zero, -0x64 ; addi a3, zero, 0x100 ; ecall  ; 
+0x39afe : addi a7, zero, 0x4f ; addi a0, zero, -0x64 ; addi a3, zero, 0x100 ; ecall  ; 
+0x39b3a : addi a7, zero, 0x4f ; ecall  ; 
+0x39c4c : addi a7, zero, 0xd6 ; ecall  ; 
 
-0x3e8ba : addi a1, s0, -0x470 ; ecall  ; 
-0x3e8b6 : addi a7, zero, 0x42 ; addi a1, s0, -0x470 ; ecall  ; 
-0x3e8b2 : ld a0, -0x4a0(s0) ; addi a7, zero, 0x42 ; addi a1, s0, -0x470 ; ecall  ; 
-0x4495c : addi a7, zero, 0x3d ; ecall  ; 
-0x449b4 : addi a7, zero, 0x43 ; ecall  ; 
+0x3e8e6 : addi a1, s0, -0x470 ; ecall  ; 
+0x3e8e2 : addi a7, zero, 0x42 ; addi a1, s0, -0x470 ; ecall  ; 
+0x3e8de : ld a0, -0x4a0(s0) ; addi a7, zero, 0x42 ; addi a1, s0, -0x470 ; ecall  ; 
+0x44988 : addi a7, zero, 0x3d ; ecall  ; 
+0x449e0 : addi a7, zero, 0x43 ; ecall  ; 
 
-0x480cc : addi a7, zero, 0x67 ; ecall  ; 
-0x4e58b : csrrsi sp, 1622, 0xe ; ecall  ; 
-0x6190b : csrrs a0, 599, t1 ; ecall  ; 
-0x65045 : csrrc s4, 594, zero ; ecall  ; 
-0x65041 : csrrs a0, 599, t1 ; csrrc s4, 594, zero ; ecall  ; 
+0x480f8 : addi a7, zero, 0x67 ; ecall  ; 
+0x4e5a3 : csrrsi sp, 1622, 0xe ; ecall  ; 
+0x61923 : csrrs a0, 599, t1 ; ecall  ; 
+0x65055 : csrrc s4, 594, zero ; ecall  ; 
+0x65051 : csrrs a0, 599, t1 ; csrrc s4, 594, zero ; ecall  ; 
 
 
 -------------- end of gadgets --------------
