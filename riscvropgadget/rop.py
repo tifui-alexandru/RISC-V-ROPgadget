@@ -72,14 +72,18 @@ class GadgetsCollection():
                     return False
             return True
 
-    def __check_valid_gadget(self, gadget):
+    def __check_valid_gadget(self, gadget, vaddr):
         # to be valid a gadget needs to be decoded completely
         # it also needs to be the right type of gadget
+        # the address of the gadget should be even
+
+        if vaddr % 2 != 0:
+            return False
 
         decoded_size = 0
         corret_type = False
 
-        for i in self.__md.disasm(gadget, 0x1000):
+        for i in self.__md.disasm(gadget, vaddr):
             bytecode = gadget[decoded_size : decoded_size + i.size]
             if self.__is_type(bytecode):
                 corret_type = True
@@ -117,7 +121,7 @@ class GadgetsCollection():
                     gadget_start = ret_start - i
                     gadget = code[gadget_start : gadget_end]
 
-                    if self.__check_valid_gadget(gadget):
+                    if self.__check_valid_gadget(gadget, vaddr + gadget_start):
                         new_instruction = self.__get_first_instruction(gadget)
 
                         if new_instruction is None:

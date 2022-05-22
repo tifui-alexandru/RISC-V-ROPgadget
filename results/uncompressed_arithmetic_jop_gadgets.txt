@@ -1,5 +1,5 @@
 Arithmetic JOP gadgets
-A total of 2932 gadgets were found 
+A total of 2927 gadgets were found 
 
 --------------------------------------------
 0x1020e : addi a0, gp, 0x118 ; jal 0xa8fe ; 
@@ -3470,55 +3470,49 @@ A total of 2932 gadgets were found
 0x124cc : mv a4, a4 ; beqz a4, -0x1fe ; addi a0, s9, 0x80 ; auipc ra, 0 ; jalr zero ; 
 0x124c8 : lui a4, 0 ; mv a4, a4 ; beqz a4, -0x1fe ; addi a0, s9, 0x80 ; auipc ra, 0 ; jalr zero ; 
 
-0x169cd : addi s8, a0, 0x106 ; jalr a6, s2, -0x7ca ; 
-0x169c9 : lwu t1, 0x68(sp) ; addi s8, a0, 0x106 ; jalr a6, s2, -0x7ca ; 
-0x169c5 : beq a6, s3, -0xf9a ; lwu t1, 0x68(sp) ; addi s8, a0, 0x106 ; jalr a6, s2, -0x7ca ; 
 0x24fd4 : addi a0, gp, -0x504 ; auipc t1, 0 ; jr zero ; 
 0x24fd0 : addi a1, a1, -0x3ae ; addi a0, gp, -0x504 ; auipc t1, 0 ; jr zero ; 
-
 0x24fcc : lui a1, 0x25 ; addi a1, a1, -0x3ae ; addi a0, gp, -0x504 ; auipc t1, 0 ; jr zero ; 
-0x25619 : andi a1, t4, -0x5d1 ; jalr s10, a1, 0x634 ; 
 0x2b0dc : beqz a5, -0x416 ; addi a0, gp, 0x578 ; auipc ra, 0 ; jalr zero ; 
 0x2fa86 : addi a0, s0, -0x498 ; auipc ra, 0 ; jalr zero ; 
-0x2f962 : addi a1, a1, 0x144 ; addi a0, s0, -0x498 ; auipc ra, 0 ; jalr zero ; 
 
+0x2f962 : addi a1, a1, 0x144 ; addi a0, s0, -0x498 ; auipc ra, 0 ; jalr zero ; 
 0x366ca : addi a1, a1, 0x144 ; add a0, a5, s1 ; auipc ra, 0 ; jalr zero ; 
 0x3478e : addi a0, s0, -0x488 ; auipc ra, 0 ; jalr zero ; 
 0x3465e : addi a1, a1, 0x144 ; addi a0, s0, -0x488 ; auipc ra, 0 ; jalr zero ; 
 0x386f8 : addi a3, tp, -0x608 ; amoor.w.aq a4, a4, (a3) ; ld a0, -0x610(tp) ; auipc ra, 0 ; jalr zero ; 
-0x3caf8 : addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 
+0x3caf8 : addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 0x3caf4 : beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 0x3caf0 : mv a3, a3 ; beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 0x3caec : lui a3, 0 ; mv a3, a3 ; beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 0x3cae8 : sd t1, 0x58(a3) ; lui a3, 0 ; mv a3, a3 ; beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
-0x3cae4 : add a3, a5, a4 ; sd t1, 0x58(a3) ; lui a3, 0 ; mv a3, a3 ; beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 
+0x3cae4 : add a3, a5, a4 ; sd t1, 0x58(a3) ; lui a3, 0 ; mv a3, a3 ; beqz a3, -0x222 ; addi a4, a4, 0x20 ; add a0, a5, a4 ; auipc ra, 0 ; jalr zero ; 
 0x480d0 : addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x480cc : lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0ec : beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0e8 : mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
-0x3d0e4 : lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 
+0x3d0e4 : lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0e0 : bnez a5, 0x26c ; lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0dc : andi a5, a5, 0x40 ; bnez a5, 0x26c ; lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0d8 : lw a5, -0x1e0(s9) ; andi a5, a5, 0x40 ; bnez a5, 0x26c ; lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
 0x3d0d4 : lui s9, 0x78 ; lw a5, -0x1e0(s9) ; andi a5, a5, 0x40 ; bnez a5, 0x26c ; lui a5, 0 ; mv a5, a5 ; beqz a5, 0x258 ; lui a0, 0x76 ; addi a0, a0, 0x320 ; auipc ra, 0 ; jalr zero ; 
-0x4dbdc : addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 
+0x4dbdc : addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 0x4dbd8 : lui a0, 0x76 ; addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 0x44404 : addi a0, gp, -0x420 ; auipc ra, 0 ; jalr zero ; 
 0x44400 : addi a1, a1, 0x17a ; addi a0, gp, -0x420 ; auipc ra, 0 ; jalr zero ; 
 0x443fc : lui a1, 0x44 ; addi a1, a1, 0x17a ; addi a0, gp, -0x420 ; auipc ra, 0 ; jalr zero ; 
-0x444ba : addi a0, gp, -0x41c ; auipc ra, 0 ; jalr zero ; 
 
+0x444ba : addi a0, gp, -0x41c ; auipc ra, 0 ; jalr zero ; 
 0x444b6 : addi a1, a1, 0x3a8 ; addi a0, gp, -0x41c ; auipc ra, 0 ; jalr zero ; 
 0x444b2 : lui a1, 0x44 ; addi a1, a1, 0x3a8 ; addi a0, gp, -0x41c ; auipc ra, 0 ; jalr zero ; 
 0x4651e : beqz a5, -0x2dc ; lui a0, 0x76 ; addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 0x4651a : mv a5, a5 ; beqz a5, -0x2dc ; lui a0, 0x76 ; addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
-0x46516 : lui a5, 0 ; mv a5, a5 ; beqz a5, -0x2dc ; lui a0, 0x76 ; addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 
-0x491fb : ori gp, t6, 0x37 ; jalr t1, ra, 0x1a0 ; 
+0x46516 : lui a5, 0 ; mv a5, a5 ; beqz a5, -0x2dc ; lui a0, 0x76 ; addi a0, a0, 0x2f8 ; auipc ra, 0 ; jalr zero ; 
 0x4dd3a : addi a0, s1, 0x80 ; auipc ra, 0 ; jalr zero ; 
 
 -------------- end of gadgets --------------

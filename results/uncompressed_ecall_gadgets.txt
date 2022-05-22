@@ -1,5 +1,5 @@
 ECALL gadgets
-A total of 45 gadgets were found 
+A total of 41 gadgets were found 
 
 --------------------------------------------
 0x69102 : ecall  ; 
@@ -51,10 +51,5 @@ A total of 45 gadgets were found
 0x449e0 : addi a7, zero, 0x43 ; ecall  ; 
 
 0x480f8 : addi a7, zero, 0x67 ; ecall  ; 
-0x4e5a3 : csrrsi sp, 1622, 0xe ; ecall  ; 
-0x61923 : csrrs a0, 599, t1 ; ecall  ; 
-0x65055 : csrrc s4, 594, zero ; ecall  ; 
-0x65051 : csrrs a0, 599, t1 ; csrrc s4, 594, zero ; ecall  ; 
-
 
 -------------- end of gadgets --------------
