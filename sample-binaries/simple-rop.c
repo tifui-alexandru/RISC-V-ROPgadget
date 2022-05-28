@@ -15,8 +15,6 @@ int main(int argc, char** argv) {
     fread(buffer, 1, total_bytes, fd);
     
     printf("Fail!\n");
-
-    printf(buffer);
-
+    
     return 0;
 }
