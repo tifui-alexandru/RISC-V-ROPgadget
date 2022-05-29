@@ -7,12 +7,11 @@ int main(int argc, char** argv) {
     
     FILE* fd = fopen(argv[1], "rb");
 
-    fseek (fd , 0 , SEEK_END);
-    size_t total_bytes = ftell(fd);
-    rewind(fd);
-
     char buffer[8];
-    fread(buffer, 1, total_bytes, fd);
+
+    while (!feof(fd)) {
+        fread(buffer, 1, 1, 1);
+    }
     
     printf("Fail!\n");
     
