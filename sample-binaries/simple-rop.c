@@ -6,11 +6,11 @@ int main(int argc, char** argv) {
     printf("Try to hack me!\n");
     
     FILE* fd = fopen(argv[1], "rb");
-
     char buffer[8];
 
-    while (!feof(fd)) {
-        fread(buffer, 1, 1, fd);
+    char c;
+    for (int i = 0; (c = getc(fd)) != EOF; i++) {
+        buffer[i] = c;
     }
     
     printf("Fail!\n");
