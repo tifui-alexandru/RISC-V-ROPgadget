@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     char buffer[8];
 
     while (!feof(fd)) {
-        fread(buffer, 1, 1, 1);
+        fread(buffer, 1, 1, fd);
     }
     
     printf("Fail!\n");
