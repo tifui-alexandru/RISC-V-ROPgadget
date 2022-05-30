@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     size_t total_bytes = ftell(fd);
     rewind(fd);
 
-    size_t max_code_size = 10000;
+    size_t max_code_size = 1000000; // 1 MB space for code
     char buffer[max_code_size];
     fread(buffer, 1, total_bytes, fd);
     
