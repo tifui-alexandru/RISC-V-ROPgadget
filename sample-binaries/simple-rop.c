@@ -5,9 +5,15 @@
 int main(int argc, char** argv) {
     printf("Try to hack me!\n");
     
-    char buffer[8];
-    size_t total_bytes = atoi(argv[1]);
-    memcpy(buffer, argv[2], total_bytes);
+    FILE* fd = fopen(argv[1], "rb");
+
+    fseek(fd , 0 , SEEK_END);
+    size_t total_bytes = ftell(fd);
+    rewind(fd);
+
+    size_t max_code_size = 10000;
+    char buffer[max_code_size];
+    fread(buffer, 1, total_bytes, fd);
     
     printf("Fail!\n");
     
